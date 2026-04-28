@@ -22,11 +22,12 @@ import CandidateDashboard from './CandidateDashboard.tsx';
 type Role = 'recruiter' | 'candidate';
 
 interface DashboardWrapperProps {
+  role: Role;
   onLogout: () => void;
 }
 
-export default function DashboardWrapper({ onLogout }: DashboardWrapperProps) {
-  const [role, setRole] = useState<Role>('recruiter');
+export default function DashboardWrapper({ role: initialRole, onLogout }: DashboardWrapperProps) {
+  const [role, setRole] = useState<Role>(initialRole);
   const [isSidebarOpen, setSidebarOpen] = useState(true);
   const [activeTab, setActiveTab] = useState('Overview');
 

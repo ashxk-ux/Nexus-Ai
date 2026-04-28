@@ -20,14 +20,16 @@ import {
   Cpu,
   Star
 } from "lucide-react";
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import Login from "./components/Login.tsx";
-import CandidateLogin from "./components/CandidateLogin.tsx";
 import DashboardWrapper from "./components/Dashboard/index.tsx";
+
+export type UserRole = "recruiter" | "candidate";
+type View = "landing" | "login" | "dashboard";
 
 // --- Components ---
 
-const Navbar = ({ onLoginClick, onCandidateLoginClick }: { onLoginClick: () => void, onCandidateLoginClick: () => void }) => (
+const Navbar = ({ onRecruiterClick, onCandidateClick }: { onRecruiterClick: () => void, onCandidateClick: () => void }) => (
   <nav className="h-20 border-b border-white/10 flex items-center justify-between px-12 z-50 sticky top-0 bg-dark-bg/80 backdrop-blur-md">
     <div className="flex items-center gap-2">
       <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-primary-blue to-accent-violet"></div>
@@ -41,13 +43,13 @@ const Navbar = ({ onLoginClick, onCandidateLoginClick }: { onLoginClick: () => v
     </div>
     <div className="flex items-center gap-4">
       <button 
-        onClick={onCandidateLoginClick}
+        onClick={onCandidateClick}
         className="hidden sm:block text-sm text-white/40 hover:text-white transition-colors font-medium"
       >
         Find Jobs
       </button>
       <button 
-        onClick={onLoginClick}
+        onClick={onRecruiterClick}
         className="px-5 py-2 rounded-full border border-white/20 text-sm hover:bg-white/5 transition-all font-medium text-white shadow-lg shadow-primary-blue/5"
       >
         Hire Talent
@@ -474,39 +476,69 @@ const Footer = () => (
 );
 
 export default function App() {
-  const [currentView, setCurrentView] = useState<"landing" | "login" | "candidate-login" | "dashboard">("landing");
+  const [currentView, setCurrentView] = useState<View>("landing");
+  const [userRole, setUserRole] = useState<UserRole | null>(null);
+  const [isInitialized, setIsInitialized] = useState(false);
+
+  useEffect(() => {
+    const savedView = localStorage.getItem("currentView") as View;
+    const savedRole = localStorage.getItem("userRole") as UserRole;
+    
+    if (savedView === "dashboard" && savedRole) {
+      setCurrentView("dashboard");
+      setUserRole(savedRole);
+    }
+    setIsInitialized(true);
+  }, []);
+
+  const handleLoginSuccess = (role: UserRole) => {
+    setUserRole(role);
+    setCurrentView("dashboard");
+    localStorage.setItem("currentView", "dashboard");
+    localStorage.setItem("userRole", role);
+  };
+
+  const handleLogout = () => {
+    setUserRole(null);
+    setCurrentView("landing");
+    localStorage.removeItem("currentView");
+    localStorage.removeItem("userRole");
+  };
+
+  const [loginInitialRole, setLoginInitialRole] = useState<UserRole>("recruiter");
+
+  const openLogin = (role: UserRole) => {
+    setLoginInitialRole(role);
+    setCurrentView("login");
+  };
+
+  if (!isInitialized) {
+    return <div className="min-h-screen bg-dark-bg" />;
+  }
 
   if (currentView === "login") {
     return (
       <Login 
         onBack={() => setCurrentView("landing")} 
-        onLoginSuccess={() => setCurrentView("dashboard")} 
+        onLoginSuccess={(role) => handleLoginSuccess(role)} 
+        initialRole={loginInitialRole}
       />
     );
   }
 
-  if (currentView === "candidate-login") {
-    return (
-      <CandidateLogin 
-        onBack={() => setCurrentView("landing")} 
-        onLoginSuccess={() => setCurrentView("dashboard")} 
-      />
-    );
-  }
-
-  if (currentView === "dashboard") {
-    return <DashboardWrapper onLogout={() => setCurrentView("landing")} />;
+  if (currentView === "dashboard" && userRole) {
+    return <DashboardWrapper role={userRole} onLogout={handleLogout} />;
   }
 
   return (
     <div className="min-h-screen bg-dark-bg selection:bg-primary-blue/30">
       <Navbar 
-        onLoginClick={() => setCurrentView("login")} 
-        onCandidateLoginClick={() => setCurrentView("candidate-login")} 
+        onRecruiterClick={() => openLogin("recruiter")} 
+        onCandidateClick={() => openLogin("candidate")} 
       />
       <Hero 
-        onCandidateClick={() => setCurrentView("candidate-login")} 
-        onRecruiterClick={() => setCurrentView("login")} 
+        onCandidateClick={() => openLogin("candidate")} 
+        onRecruiterClick={() => openLogin("recruiter")} 
       />
       <Features />
       <HowItWorks />
