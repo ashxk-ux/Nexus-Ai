@@ -22,31 +22,41 @@ import {
 } from "lucide-react";
 import { useRef, useState } from "react";
 import Login from "./components/Login.tsx";
+import CandidateLogin from "./components/CandidateLogin.tsx";
+import DashboardWrapper from "./components/Dashboard/index.tsx";
 
 // --- Components ---
 
-const Navbar = ({ onLoginClick }: { onLoginClick: () => void }) => (
+const Navbar = ({ onLoginClick, onCandidateLoginClick }: { onLoginClick: () => void, onCandidateLoginClick: () => void }) => (
   <nav className="h-20 border-b border-white/10 flex items-center justify-between px-12 z-50 sticky top-0 bg-dark-bg/80 backdrop-blur-md">
     <div className="flex items-center gap-2">
       <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-primary-blue to-accent-violet"></div>
       <span className="text-xl font-bold tracking-tight font-display">NexusAI</span>
     </div>
-    <div className="hidden md:flex gap-8 text-sm text-white/50 font-medium">
+    <div className="hidden lg:flex gap-8 text-sm text-white/50 font-medium px-4">
       <a href="#features" className="hover:text-white transition-colors">Features</a>
       <a href="#how-it-works" className="hover:text-white transition-colors">Process</a>
       <a href="#dashboard" className="hover:text-white transition-colors">Platform</a>
       <a href="#why-us" className="hover:text-white transition-colors">Benefits</a>
     </div>
-    <button 
-      onClick={onLoginClick}
-      className="px-5 py-2 rounded-full border border-white/20 text-sm hover:bg-white/5 transition-all font-medium"
-    >
-      Sign In
-    </button>
+    <div className="flex items-center gap-4">
+      <button 
+        onClick={onCandidateLoginClick}
+        className="hidden sm:block text-sm text-white/40 hover:text-white transition-colors font-medium"
+      >
+        Find Jobs
+      </button>
+      <button 
+        onClick={onLoginClick}
+        className="px-5 py-2 rounded-full border border-white/20 text-sm hover:bg-white/5 transition-all font-medium text-white shadow-lg shadow-primary-blue/5"
+      >
+        Hire Talent
+      </button>
+    </div>
   </nav>
 );
 
-const Hero = () => (
+const Hero = ({ onCandidateClick, onRecruiterClick }: { onCandidateClick: () => void, onRecruiterClick: () => void }) => (
   <section className="relative min-h-[90vh] flex flex-col items-center justify-center pt-20 pb-20 px-12 overflow-hidden bg-blobs">
     {/* Background Blobs (Geometric Balance specific) */}
     <div className="absolute top-[-10%] right-[-10%] w-[500px] h-[500px] bg-primary-blue/10 blur-[120px] rounded-full pointer-events-none" />
@@ -76,12 +86,18 @@ const Hero = () => (
       </p>
       
       <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-        <button className="px-8 py-4 bg-white text-black font-bold rounded-xl hover:bg-gray-200 transition-colors glow-blue active:scale-95">
-          Start Free Trial
+        <button 
+          onClick={onCandidateClick}
+          className="px-8 py-4 bg-white text-black font-bold rounded-xl hover:bg-gray-200 transition-colors glow-blue active:scale-95"
+        >
+          Start Your Career
         </button>
         
-        <button className="px-8 py-4 border border-white/20 rounded-xl font-bold hover:bg-white/5 transition-all text-white active:scale-95">
-          Watch Demo
+        <button 
+          onClick={onRecruiterClick}
+          className="px-8 py-4 border border-white/20 rounded-xl font-bold hover:bg-white/5 transition-all text-white active:scale-95"
+        >
+          Hire Top Talent
         </button>
       </div>
     </motion.div>
@@ -458,16 +474,40 @@ const Footer = () => (
 );
 
 export default function App() {
-  const [currentView, setCurrentView] = useState<"landing" | "login">("landing");
+  const [currentView, setCurrentView] = useState<"landing" | "login" | "candidate-login" | "dashboard">("landing");
 
   if (currentView === "login") {
-    return <Login onBack={() => setCurrentView("landing")} />;
+    return (
+      <Login 
+        onBack={() => setCurrentView("landing")} 
+        onLoginSuccess={() => setCurrentView("dashboard")} 
+      />
+    );
+  }
+
+  if (currentView === "candidate-login") {
+    return (
+      <CandidateLogin 
+        onBack={() => setCurrentView("landing")} 
+        onLoginSuccess={() => setCurrentView("dashboard")} 
+      />
+    );
+  }
+
+  if (currentView === "dashboard") {
+    return <DashboardWrapper onLogout={() => setCurrentView("landing")} />;
   }
 
   return (
     <div className="min-h-screen bg-dark-bg selection:bg-primary-blue/30">
-      <Navbar onLoginClick={() => setCurrentView("login")} />
-      <Hero />
+      <Navbar 
+        onLoginClick={() => setCurrentView("login")} 
+        onCandidateLoginClick={() => setCurrentView("candidate-login")} 
+      />
+      <Hero 
+        onCandidateClick={() => setCurrentView("candidate-login")} 
+        onRecruiterClick={() => setCurrentView("login")} 
+      />
       <Features />
       <HowItWorks />
       <DashboardSection />

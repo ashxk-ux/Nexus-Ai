@@ -7,22 +7,25 @@ import {
   EyeOff, 
   Linkedin, 
   ArrowLeft,
-  Loader2
+  Loader2,
+  Briefcase,
+  Search,
+  Sparkles
 } from "lucide-react";
 
-interface LoginProps {
+interface CandidateLoginProps {
   onBack: () => void;
   onLoginSuccess: () => void;
 }
 
-export default function Login({ onBack, onLoginSuccess }: LoginProps) {
+export default function CandidateLogin({ onBack, onLoginSuccess }: CandidateLoginProps) {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    // Simulate API call
+    // Simulate API call and redirect to candidate view
     setTimeout(() => {
       setIsLoading(false);
       onLoginSuccess();
@@ -42,7 +45,7 @@ export default function Login({ onBack, onLoginSuccess }: LoginProps) {
         <span className="font-semibold text-sm">Back to Home</span>
       </button>
 
-      {/* Left Side: Abstract Visuals */}
+      {/* Left Side: Aspirational Career Visuals */}
       <div className="hidden lg:flex lg:w-1/2 relative bg-blobs items-center justify-center p-20 overflow-hidden border-r border-white/5">
         <div className="absolute inset-0 bg-[radial-gradient(#1e293b_1px,transparent_1px)] [background-size:32px_32px] opacity-20" />
         
@@ -52,42 +55,56 @@ export default function Login({ onBack, onLoginSuccess }: LoginProps) {
           transition={{ duration: 0.8 }}
           className="relative z-10 max-w-lg"
         >
-          <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-primary-blue to-accent-violet mb-12 flex items-center justify-center shadow-2xl">
-            <span className="text-3xl font-bold font-display">N</span>
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary-blue/10 border border-primary-blue/30 text-primary-blue text-[10px] font-black uppercase tracking-widest mb-8">
+            <Sparkles className="w-3 h-3" />
+            Candidate Portal
           </div>
           <h1 className="text-5xl font-display font-bold leading-tight mb-6">
-            Welcome Back to <span className="text-gradient">Smarter Hiring</span>
+            Start Your <span className="text-gradient">Career Journey</span> with AI
           </h1>
-          <p className="text-lg text-white/50 leading-relaxed">
-            Log in to continue your AI-powered recruitment journey and connect with top talent globally.
+          <p className="text-lg text-white/50 leading-relaxed mb-12">
+            Login to explore jobs perfectly tailored to your unique skill set and career aspirations.
           </p>
 
-          <div className="mt-12 space-y-6">
-            {[1, 2, 3].map((i) => (
-              <motion.div 
-                key={i}
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.2 * i }}
-                className="flex items-center gap-4 text-sm text-white/40"
-              >
-                <div className="w-2 h-2 rounded-full bg-primary-blue shadow-[0_0_8px_#4F9CF9]" />
-                {i === 1 && "Enterprise-grade security standards"}
-                {i === 2 && "Real-time candidate matching analytics"}
-                {i === 3 && "Unbiased AI ranking engine v2.0"}
-              </motion.div>
-            ))}
-          </div>
+          {/* Mini Dashboard Widget Mockup */}
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5 }}
+            className="glass rounded-2xl p-6 border-primary-blue/20 shadow-2xl"
+          >
+            <div className="flex items-center gap-4 mb-6">
+              <div className="w-12 h-12 rounded-xl bg-primary-blue/20 flex items-center justify-center">
+                <Search className="w-6 h-6 text-primary-blue" />
+              </div>
+              <div>
+                <p className="text-xs text-white/40 uppercase font-black">AI Matching Engine</p>
+                <p className="font-bold">Searching for Senior Roles...</p>
+              </div>
+            </div>
+            <div className="space-y-3">
+              {[
+                { title: "Frontend Engineer", match: 98, color: "bg-green-400" },
+                { title: "Product Designer", match: 85, color: "bg-primary-blue" }
+              ].map((job, idx) => (
+                <div key={idx} className="flex items-center justify-between p-3 rounded-lg bg-white/5 text-sm">
+                  <div className="flex items-center gap-3">
+                    <Briefcase className="w-4 h-4 text-white/40" />
+                    <span className="font-medium">{job.title}</span>
+                  </div>
+                  <span className={`text-xs font-bold ${idx === 0 ? 'text-green-400' : 'text-primary-blue'}`}>{job.match}% Match</span>
+                </div>
+              ))}
+            </div>
+          </motion.div>
         </motion.div>
 
-        {/* Decorative Particles (Simulated) */}
-        <div className="absolute top-1/4 right-1/4 w-64 h-64 bg-primary-blue/10 rounded-full blur-[100px] animate-pulse" />
-        <div className="absolute bottom-1/4 left-1/4 w-64 h-64 bg-accent-violet/10 rounded-full blur-[100px] animate-pulse delay-1000" />
+        {/* Dynamic Glows */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-primary-blue/5 rounded-full blur-[150px] pointer-events-none" />
       </div>
 
-      {/* Right Side: Login Card */}
+      {/* Right Side: Candidate Login Form */}
       <div className="flex-1 flex items-center justify-center p-6 relative">
-        {/* Mobile background elements */}
         <div className="lg:hidden absolute inset-0 bg-blobs opacity-50 -z-10" />
         
         <motion.div 
@@ -95,18 +112,19 @@ export default function Login({ onBack, onLoginSuccess }: LoginProps) {
           animate={{ opacity: 1, y: 0 }}
           className="w-full max-w-md"
         >
-          <div className="glass rounded-3xl p-8 md:p-12 shadow-2xl relative overflow-hidden group">
-            <div className="absolute -top-24 -right-24 w-48 h-48 bg-primary-blue/10 blur-[60px] rounded-full group-hover:bg-primary-blue/20 transition-colors" />
-            
+          <div className="glass rounded-3xl p-8 md:p-12 shadow-2xl">
             <div className="text-center mb-10">
-              <h2 className="text-3xl font-display font-bold mb-2">Recruiter Login</h2>
-              <p className="text-white/40 text-sm">Access your employer intelligence dashboard</p>
+              <img src="https://ais-dev-5rerhlahtbutmr7n4yveka-32069265483.asia-southeast1.run.app/logo.png" className="w-12 h-12 mx-auto mb-6 hidden" alt="Logo" />
+               <div className="w-12 h-12 rounded-xl bg-gradient-to-tr from-primary-blue to-accent-violet mx-auto mb-6 flex items-center justify-center font-bold text-xl shadow-lg ring-4 ring-primary-blue/10">
+                N
+              </div>
+              <h2 className="text-3xl font-display font-bold mb-2">Candidate Login</h2>
+              <p className="text-white/40 text-sm">Access your personalized job dashboard</p>
             </div>
 
             <form onSubmit={handleLogin} className="space-y-6">
-              {/* Email Field */}
               <div className="space-y-2">
-                <label className="text-xs font-bold uppercase tracking-widest text-white/30 ml-1">Work Email</label>
+                <label className="text-xs font-bold uppercase tracking-widest text-white/30 ml-1">Candidate Email</label>
                 <div className="relative group/field">
                   <div className="absolute left-4 top-1/2 -translate-y-1/2 text-white/30 group-focus-within/field:text-primary-blue transition-colors">
                     <Mail className="w-5 h-5" />
@@ -114,17 +132,16 @@ export default function Login({ onBack, onLoginSuccess }: LoginProps) {
                   <input 
                     type="email" 
                     required
-                    placeholder="name@company.com"
+                    placeholder="john@example.com"
                     className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 pl-12 pr-4 text-sm outline-none focus:border-primary-blue/50 focus:bg-white/10 transition-all focus:glow-blue"
                   />
                 </div>
               </div>
 
-              {/* Password Field */}
               <div className="space-y-2">
                 <div className="flex justify-between items-center px-1">
                   <label className="text-xs font-bold uppercase tracking-widest text-white/30">Password</label>
-                  <a href="#" className="text-xs text-primary-blue hover:underline">Forgot?</a>
+                  <a href="#" className="text-xs text-primary-blue hover:underline font-medium">Forgot?</a>
                 </div>
                 <div className="relative group/field">
                   <div className="absolute left-4 top-1/2 -translate-y-1/2 text-white/30 group-focus-within/field:text-primary-blue transition-colors">
@@ -146,19 +163,18 @@ export default function Login({ onBack, onLoginSuccess }: LoginProps) {
                 </div>
               </div>
 
-              {/* Submit Button */}
               <button 
                 type="submit"
                 disabled={isLoading}
-                className="w-full group relative bg-gradient-to-r from-primary-blue to-accent-violet p-[1px] rounded-2xl hover:glow-blue transition-all active:scale-[0.98] disabled:opacity-50"
+                className="w-full group relative bg-gradient-to-r from-primary-blue to-cyan-400 p-[1px] rounded-2xl hover:glow-blue transition-all active:scale-[0.98] disabled:opacity-50"
               >
                 <div className="bg-dark-bg/90 group-hover:bg-transparent py-4 rounded-2xl transition-all flex items-center justify-center gap-2">
                   {isLoading ? (
                     <Loader2 className="w-5 h-5 animate-spin" />
                   ) : (
                     <>
-                      <span className="font-bold">Login to Dashboard</span>
-                      <ArrowLeft className="w-4 h-4 rotate-180 group-hover:translate-x-1 transition-transform" />
+                      <span className="font-bold">Login as Candidate</span>
+                      <Sparkles className="w-4 h-4 group-hover:scale-125 transition-transform" />
                     </>
                   )}
                 </div>
@@ -167,11 +183,10 @@ export default function Login({ onBack, onLoginSuccess }: LoginProps) {
 
             <div className="my-8 flex items-center gap-4">
               <div className="h-px flex-1 bg-white/10" />
-              <span className="text-[10px] uppercase tracking-widest text-white/20 font-bold">Or continue with</span>
+              <span className="text-[10px] uppercase tracking-widest text-white/20 font-bold">Smart Auth</span>
               <div className="h-px flex-1 bg-white/10" />
             </div>
 
-            {/* Social Logins */}
             <div className="grid grid-cols-2 gap-4">
               <button className="flex items-center justify-center gap-2 glass py-3 rounded-2xl hover:bg-white/10 transition-all text-sm font-medium">
                 <svg className="w-5 h-5" viewBox="0 0 24 24">
@@ -189,7 +204,7 @@ export default function Login({ onBack, onLoginSuccess }: LoginProps) {
             </div>
 
             <p className="mt-10 text-center text-sm text-white/30">
-              Don't have an account? <a href="#" className="text-white hover:text-primary-blue transition-colors font-bold underline underline-offset-4 decoration-primary-blue/30">Create one now</a>
+              New to Nexus? <a href="#" className="text-white hover:text-primary-blue transition-colors font-bold underline underline-offset-4 decoration-primary-blue/30">Create Account</a>
             </p>
           </div>
         </motion.div>
